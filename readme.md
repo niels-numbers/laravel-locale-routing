@@ -1,43 +1,44 @@
-# Laravel Localization
+# Laravel Locale Routing
 
-This package is the maintained continuation of [mcamara/laravel-localization](https://github.com/mcamara/laravel-localization).  
-I (Adam Nielsen) was a collaborator on the original package, and since @mcamara has moved on, I am now maintaining it as version v3.
-
-The purpose remains the same: detect the user’s preferred language from the request  
-and redirect to the correct localized URL.
+Detect the user’s preferred language from the request and redirect them to the correct localized URL.  
+You can hide the default locale in the URI or translate your URIs.
 
 ---
 
-## What does this package do?
-
-Example:
+## Example how this works
 
 - User visits `example.com`
-- Language is detected from request as German → redirect to `example.com/de`
-- Otherwise fallback (e.g. English) → `example.com/en`
+- Language is detected as German → redirect to `example.com/de`
+- Otherwise fallback to English → `example.com/en`
 
-You can optionally **hide the default locale**.  
-If `en` is default, the main URL stays `example.com` instead of `example.com/en`.
+You can choose to hide your default locale. For example, if `en` is the default locale,  the main URL stays `example.com` instead of `example.com/en`.
 
-Behind the scenes, each route is registered twice:
+On the first visit to `example.com` (without a locale), the package will try to detect the language from the request.  
+The result is stored in the session or a cookie (configurable) and used for all future requests.
 
-- `/example-route`
-- `/{locale}/example-route`
-
-Once a language is stored in the session or cookie, requests without a locale are redirected to the stored language
-— unless it’s the default locale with hidden prefix, in which case no redirect occurs.
+Behind the scenes, each route is registered twice: once with a `{locale}` placeholder, and once without.  
+You don’t need to worry about this — just keep using the `route(...)` helper as usual - we do the mapping to the correct route behind the scenes.
+This is compatible with `ziggy` out of the box.
+The package takes care of the rest, enabling automatic redirects, URL translation,  
+and full compatibility with Laravel’s route cache.
 
 URL translations are also supported.
 
 > Note: This package does not make Eloquent models translatable.  
 > For that, see [spatie/laravel-translatable](https://github.com/spatie/laravel-translatable).
- 
-## Routing approach
 
-The [original package](https://github.com/mcamara/laravel-localization) generated dynamic routes, which caused cache and compatibility issues.  
-This maintained version introduces a new design: each route is registered **twice** —  
+## Background
+
+This package is the maintained continuation of [mcamara/laravel-localization](https://github.com/mcamara/laravel-localization).  
+I (Adam Nielsen) was a collaborator on the original package, and since @mcamara has moved on, I am now maintaining it as version v3.
+
+The [original package](https://github.com/mcamara/laravel-localization) generated **dynamic routes**, 
+which led to cache and compatibility issues.  
+[laravel-localized-routes](https://github.com/codezero-be/laravel-localized-routes) solved this by generating **static routes for each locale** (N× per definition).
+
+This package takes a **middle path**: each route is registered **twice** —  
 once with a `{locale}` placeholder, and once without (using a `no_prefix.` name).  
-This is a clean alternative that supports route caching and avoids duplication per locale.
+This avoids dynamic routing issues while keeping the number of routes manageable.
 
 ## Do I need this package?
 
@@ -53,6 +54,36 @@ You **don’t** need it if you are fine with only:
 - `example.com/en/blog`
 
 and do not need `example.com/blog` or locale detection from the browser.
+
+## Testing
+
+This package includes a Docker setup for consistent testing across environments.
+
+### Prerequisites
+- Docker
+- Docker Compose
+- GNU Make (optional, but recommended)
+
+### Usage with Make
+
+The following will first build the docker image,
+then install dependencies via composer and then run phpunit.
+
+```bash
+make build    # Build the Docker image
+make install  # Install Composer dependencies inside the container
+make test     # Run PHPUnit tests (tests are in /tests, using Orchestra Testbench)
+``` 
+
+### Usage without Make
+
+If you don’t have `make`, you can run the commands manually:
+
+```bash
+docker compose build
+UID=$(id -u) GID=$(id -g) docker compose run --rm test composer install
+UID=$(id -u) GID=$(id -g) docker compose run --rm test vendor/bin/phpunit
+```
 
 ## Credits
 
