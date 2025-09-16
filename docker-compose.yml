@@ -1,0 +1,9 @@
+version: '3.9'
+
+services:
+  test:
+    build: .
+    volumes:
+      - .:/app
+    working_dir: /app
+    user: "${UID:-1000}:${GID:-1000}"
