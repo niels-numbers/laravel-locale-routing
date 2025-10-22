@@ -42,4 +42,20 @@ class UrlGeneratorTest extends TestCase
         // Because your route() method doesn’t return yet, we just check that it’s called
         $url->route('test');
     }
+
+    #[Test]
+    public function it_works_for_standard_routes()
+    {
+        Route::get('/test', fn () => 'ok')->name('test');
+
+        /** @var \NielsNumbers\LocaleRouting\Illuminate\Routing\UrlGenerator $url */
+        $url = app('url');
+
+        $this->assertInstanceOf(CustomUrlGenerator::class, $url);
+
+        // Because your route() method doesn’t return yet, we just check that it’s called
+        $route = $url->route('test', [], false);
+
+        $this->assertEquals('/test', $route);
+    }
 }
