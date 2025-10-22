@@ -16,15 +16,17 @@ class UrlGenerator extends BaseUrlGenerator
         $urlLocale = $parameters['locale'] ?? null;
 
         $resolvedName = $this->resolveLocalizedRouteName($name, $urlLocale, $appLocale);
+
+        parent::route($resolvedName, $parameters, $absolute);
     }
 
-    protected function resolveLocalizedRouteName(string $name, string|null $urlLocale, string $appLocale): string|null
+    protected function resolveLocalizedRouteName(string $name, string|null $urlLocale, string $appLocale): string
     {
         if (Route::has($name)) {
             return $name;
         }
 
-        return null;
+        return $name;
     }
 
 

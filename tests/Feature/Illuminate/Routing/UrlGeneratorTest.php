@@ -8,6 +8,7 @@ use Orchestra\Testbench\TestCase;
 use NielsNumbers\LocaleRouting\ServiceProvider;
 use NielsNumbers\LocaleRouting\Illuminate\Routing\UrlGenerator as CustomUrlGenerator;
 use Illuminate\Contracts\Routing\UrlGenerator as UrlGeneratorContract;
+use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
 class UrlGeneratorTest extends TestCase
 {
@@ -26,17 +27,18 @@ class UrlGeneratorTest extends TestCase
     }
 
     /** @test */
-    public function it_uses_custom_route_method()
+    public function it_throws_exception_if_route_is_not_found()
     {
-        Route::get('/test', fn () => 'ok')->name('test');
+        // Route::get('/test', fn () => 'ok')->name('test');
 
         /** @var \NielsNumbers\LocaleRouting\Illuminate\Routing\UrlGenerator $url */
         $url = app('url');
 
         $this->assertInstanceOf(CustomUrlGenerator::class, $url);
 
+        $this->expectException(RouteNotFoundException::class);
+
         // Because your route() method doesn’t return yet, we just check that it’s called
-        $result = $url->route('test');
-        $this->assertNull($result);
+        $url->route('test');
     }
 }
