@@ -4,6 +4,7 @@ namespace NielsNumbers\LocaleRouting\Tests\Feature\Illuminate\Routing;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\App;
+use PHPUnit\Framework\Attributes\Test;
 use Orchestra\Testbench\TestCase;
 use NielsNumbers\LocaleRouting\ServiceProvider;
 use NielsNumbers\LocaleRouting\Illuminate\Routing\UrlGenerator as CustomUrlGenerator;
@@ -17,7 +18,7 @@ class UrlGeneratorTest extends TestCase
         return [ServiceProvider::class];
     }
 
-    /** @test */
+    #[Test]
     public function it_replaces_the_default_url_generator()
     {
         $url = $this->app->make(UrlGeneratorContract::class);
@@ -26,7 +27,7 @@ class UrlGeneratorTest extends TestCase
         $this->assertSame($url, app('url')); // both bindings are identical
     }
 
-    /** @test */
+    #[Test]
     public function it_throws_exception_if_route_is_not_found()
     {
         // Route::get('/test', fn () => 'ok')->name('test');
