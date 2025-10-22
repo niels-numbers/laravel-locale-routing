@@ -39,9 +39,12 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
             $app->instance('routes', $routes);
 
             return new UrlGenerator(
-                $routes, $app->rebinding(
-                'request', $this->requestRebinder()
-            ), $app['config']['app.asset_url']
+                $routes,
+                $app->rebinding(
+                    'request', $this->requestRebinder()
+                ),
+                $app['config']['app.asset_url'],
+                $app->make(\NielsNumbers\LocaleRouting\Config::class)
             );
         });
 
