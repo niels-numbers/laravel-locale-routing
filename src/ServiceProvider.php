@@ -5,6 +5,7 @@ namespace NielsNumbers\LocaleRouting;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Contracts\Routing\UrlGenerator as UrlGeneratorContract;
+use NielsNumbers\LocaleRouting\Facades\Localizer as LocalizerFacade;
 use NielsNumbers\LocaleRouting\Illuminate\Routing\UrlGenerator;
 
 class ServiceProvider extends \Illuminate\Support\ServiceProvider
@@ -20,9 +21,8 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
 
     public function register(): void
     {
-        $this->app->singleton(Config::class, function ($app) {
-            return new Config($app['config']->get('locale-routing', []));
-        });
+        $this->app->singleton(Localizer::class, fn() => new Localizer());
+        $this->mergeConfigFrom(__DIR__ . '/../config/locale-routing.php', 'locale-routing');
 
         $this->registerUrlGenerator();
     }
@@ -43,8 +43,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
                 $app->rebinding(
                     'request', $this->requestRebinder()
                 ),
-                $app['config']['app.asset_url'],
-                $app->make(\NielsNumbers\LocaleRouting\Config::class)
+                $app['config']['app.asset_url']
             );
         });
 
@@ -80,9 +79,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
 
     protected function registerMacros(): void
     {
-        /** @var Config $config */
-        $config = App::make(Config::class);
-        $macroRegisterName = $config->macroRegisterName();
+        $macroRegisterName = LocalizerFacade::macroRegisterName();
 
         Route::macro($macroRegisterName, function (callable $callable) {
             App::make(RouteRegistrar::class)->register($callable);

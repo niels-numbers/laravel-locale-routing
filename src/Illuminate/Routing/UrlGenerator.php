@@ -7,19 +7,10 @@ use Illuminate\Routing\RouteCollectionInterface;
 use Illuminate\Routing\UrlGenerator as BaseUrlGenerator;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
-use NielsNumbers\LocaleRouting\Config;
+use NielsNumbers\LocaleRouting\Facades\Localizer;
 
 class UrlGenerator extends BaseUrlGenerator
 {
-    protected Config $config;
-
-    public function __construct(RouteCollectionInterface $routes, Request $request, string|null $assetUrl, Config $config = null)
-    {
-        parent::__construct($routes, $request, $assetUrl);
-
-        $this->config = $config;
-    }
-
     public function route($name, $parameters = [], $absolute = true)
     {
         $urlLocale = $parameters['locale'] ?? null;
@@ -29,12 +20,14 @@ class UrlGenerator extends BaseUrlGenerator
         }
 
         $defaultLocale = config('app.locale');
-        $hideDefault = $this->config->hideDefaultLocale();
+        $hideDefault = Localizer::hideDefaultLocale();
 
         // If locale is default and hide_default_locale is true → use route without locale prefix
         if ($hideDefault && $urlLocale === $defaultLocale) {
             $withoutLocaleName = 'without_locale.' . $name;
             if (Route::has($withoutLocaleName)) {
+                // Need to unset locale here, otherwise it will
+                // show as query paramter in url
                 unset($parameters['locale']);
                 return parent::route($withoutLocaleName, $parameters, $absolute);
             }
