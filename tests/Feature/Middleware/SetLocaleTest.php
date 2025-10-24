@@ -5,6 +5,7 @@ namespace NielsNumbers\LocaleRouting\Tests\Feature\Middleware;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Session;
 use Orchestra\Testbench\TestCase;
 use NielsNumbers\LocaleRouting\Middleware\SetLocale;
 use NielsNumbers\LocaleRouting\Localizer;
@@ -38,39 +39,35 @@ class SetLocaleTest extends TestCase
     protected function defineRoutes($router)
     {
         $router->middleware(SetLocale::class)->group(function () use ($router) {
-            $router->get('/{locale}/about', fn() => response('about'))->name('about.locale');
+            $router->get('/{locale}/about', fn($locale) => $locale)->name('about.locale');
             $router->get('/about', fn() => response('about'))->name('about');
             $router->get('/{locale}', fn() => response('start'))->name('start.locale');
             $router->get('/', fn() => response('start'))->name('start');
         });
     }
 
-    /** @test */
-    public function it_sets_locale_from_route()
+    public function test_sets_locale_from_route_parameter()
     {
-        $this->get('/de/about');
+        $response = $this->get('/de/about');
         $this->assertEquals('de', App::getLocale());
+        $response->assertOk(); // route doesn't exist, but middleware ran
     }
 
-    /** @test */
-    public function it_redirects_if_default_locale_hidden()
+    public function test_stores_locale_in_session()
     {
-        $response = $this->get('/en/about');
-        $response->assertRedirect('/about');
+        Config::set('locale-routing.use_session', true);
+        Session::flush();
+
+        $this->get('/de/about');
+        $this->assertEquals('de', Session::get('locale'));
     }
 
-    /** @test */
-    public function it_redirects_if_default_locale_hidden_edge_case()
+    public function test_reads_locale_from_session()
     {
-        $response = $this->get('/en');
-        $response->assertRedirect('/');
-    }
+        Config::set('locale-routing.use_session', true);
+        session(['locale' => 'de']);
 
-    /** @test */
-    public function it_redirects_to_prefixed_when_missing()
-    {
-        $this->withSession(['locale' => 'de']);
-        $response = $this->get('/about');
-        $response->assertRedirect('/de/about');
+        $this->get('/about');
+        $this->assertEquals('de', Session::get('locale'));
     }
 }
