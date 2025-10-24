@@ -31,34 +31,6 @@ class Localizer
         return Config::get('locale-routing.detectors', []);
     }
 
-    public function detectLocale(Request $request): ?string
-    {
-        foreach ($this->detectors() as $detectorClass) {
-            $detector = app($detectorClass);
-            if ($detector instanceof DetectorInterface) {
-                $locale = $detector->detect($request);
-                if ($locale) {
-                    return $locale;
-                }
-            }
-        }
-
-        return null;
-    }
-
-    public function setLocale(string $locale): void
-    {
-        App::setLocale($locale);
-
-        if ($this->storesInSession()) {
-            Session::put('locale', $locale);
-        }
-
-        if ($this->storesInCookie()) {
-            Cookie::queue('locale', $locale, 60 * 24 * 30);
-        }
-    }
-
     // @toDO will be part of the translatable urls..
     public function url(string $name, ?string $locale = null): string
     {

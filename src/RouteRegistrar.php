@@ -10,13 +10,14 @@ class RouteRegistrar
     public function register(Closure $closure): void
     {
         Route::group([
+            'as' => 'with_locale.',
             'prefix' => '{locale}',
             'locale_type' => 'with_locale',
         ], $closure);
 
         Route::group([
-            'as' => 'no_prefix.',
-            'locale_type' => 'no_prefix',
+            'as' => 'without_locale.',
+            'locale_type' => 'without_locale',
         ], $closure);
     }
 }
