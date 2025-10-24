@@ -1,12 +1,12 @@
 <?php
 
-namespace NielsNumbers\LocaleRouting\Tests\Feature;
+namespace NielsNumbers\LocaleRouting\Tests\Feature\Macros;
 
 use Illuminate\Support\Facades\Route;
-use Orchestra\Testbench\TestCase;
 use NielsNumbers\LocaleRouting\ServiceProvider;
+use Orchestra\Testbench\TestCase;
 
-class RouteMacroTest extends TestCase
+class LocalizeMacroTest extends TestCase
 {
     protected function getPackageProviders($app)
     {
@@ -16,14 +16,14 @@ class RouteMacroTest extends TestCase
     /** @test */
     public function it_registers_the_macro()
     {
-        Route::localized(function () {
+        Route::localize(function () {
             Route::get('/test', fn () => 'ok')->name('test');
         });
 
         $routes = collect(Route::getRoutes())->map->getName();
 
-        $this->assertTrue($routes->contains('test'));
-        $this->assertTrue($routes->contains('no_prefix.test'));
+        $this->assertTrue($routes->contains('with_locale.test'));
+        $this->assertTrue($routes->contains('without_locale.test'));
         $this->assertCount(2, $routes);
     }
 }

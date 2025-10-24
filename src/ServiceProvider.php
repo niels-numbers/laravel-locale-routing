@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Contracts\Routing\UrlGenerator as UrlGeneratorContract;
 use NielsNumbers\LocaleRouting\Facades\Localizer as LocalizerFacade;
 use NielsNumbers\LocaleRouting\Illuminate\Routing\UrlGenerator;
+use NielsNumbers\LocaleRouting\Macros\LocalizeMacro;
+use NielsNumbers\LocaleRouting\Services\UriTranslator;
 
 class ServiceProvider extends \Illuminate\Support\ServiceProvider
 {
@@ -21,7 +23,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
 
     public function register(): void
     {
-        $this->app->singleton(Localizer::class, fn() => new Localizer());
+        $this->app->singleton(Localizer::class, fn() => new Localizer(new UriTranslator()));
         $this->mergeConfigFrom(__DIR__ . '/../config/locale-routing.php', 'locale-routing');
 
         $this->registerUrlGenerator();

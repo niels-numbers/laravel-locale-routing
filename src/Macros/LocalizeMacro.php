@@ -1,11 +1,11 @@
 <?php
 
-namespace NielsNumbers\LocaleRouting;
+namespace NielsNumbers\LocaleRouting\Macros;
 
 use Closure;
 use Illuminate\Support\Facades\Route;
 
-class RouteRegistrar
+class LocalizeMacro
 {
     public function register(Closure $closure): void
     {
