@@ -17,6 +17,12 @@ class Localizer
     ) {
     }
 
+    public function supportedLocales(): bool
+    {
+        return Config::get('locale-routing.supported_locales', true);
+    }
+
+
     public function hideDefaultLocale(): bool
     {
         return Config::get('locale-routing.hide_default_locale', true);

@@ -2,12 +2,13 @@
 
 namespace NielsNumbers\LocaleRouting;
 
+use Illuminate\Contracts\Routing\UrlGenerator as UrlGeneratorContract;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Contracts\Routing\UrlGenerator as UrlGeneratorContract;
 use NielsNumbers\LocaleRouting\Facades\Localizer as LocalizerFacade;
 use NielsNumbers\LocaleRouting\Illuminate\Routing\UrlGenerator;
 use NielsNumbers\LocaleRouting\Macros\LocalizeMacro;
+use NielsNumbers\LocaleRouting\Macros\TranslateMacro;
 use NielsNumbers\LocaleRouting\Services\UriTranslator;
 
 class ServiceProvider extends \Illuminate\Support\ServiceProvider
@@ -84,7 +85,11 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
         $macroRegisterName = LocalizerFacade::macroRegisterName();
 
         Route::macro($macroRegisterName, function (callable $callable) {
-            App::make(RouteRegistrar::class)->register($callable);
+            App::make(LocalizeMacro::class)->register($callable);
+        });
+
+        Route::macro('translate', function (callable $callback) {
+            app(TranslateMacro::class)->register($callback);
         });
     }
 }

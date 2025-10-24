@@ -5,6 +5,7 @@ namespace NielsNumbers\LocaleRouting\Facades;
 use Illuminate\Support\Facades\Facade;
 
 /**
+ * @method static array supportedLocales()
  * @method static bool hideDefaultLocale()
  * @method static bool storesInSession()
  * @method static bool storesInCookie()
