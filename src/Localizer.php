@@ -17,7 +17,7 @@ class Localizer
     ) {
     }
 
-    public function supportedLocales(): bool
+    public function supportedLocales(): array
     {
         return Config::get('locale-routing.supported_locales', true);
     }
