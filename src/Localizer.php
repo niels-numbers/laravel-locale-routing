@@ -8,9 +8,15 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Session;
 use NielsNumbers\LocaleRouting\Contracts\DetectorInterface;
+use NielsNumbers\LocaleRouting\Services\UriTranslator;
 
 class Localizer
 {
+    public function __construct(
+        protected UriTranslator $translator
+    ) {
+    }
+
     public function hideDefaultLocale(): bool
     {
         return Config::get('locale-routing.hide_default_locale', true);
@@ -31,11 +37,9 @@ class Localizer
         return Config::get('locale-routing.detectors', []);
     }
 
-    // @toDO will be part of the translatable urls..
-    public function url(string $name, ?string $locale = null): string
+    public function url(string $uri, ?string $locale = null): string
     {
-        // Placeholder for your translated URL logic
-        return $name . ($locale ? " ({$locale})" : '');
+        return $this->translator->translate($uri, $locale);
     }
 
     public function macroRegisterName(): string
