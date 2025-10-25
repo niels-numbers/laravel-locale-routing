@@ -35,7 +35,7 @@ class TranslateMacro
             App::setLocale($locale);
 
             Route::prefix($locale)
-                ->name("$locale.")
+                ->name("translated_$locale.")
                 ->group(function () use ($routes, $locale) {
                     // Inside, user calls Route::get(Localizer::uri('...'))
                     $routes();
@@ -43,6 +43,8 @@ class TranslateMacro
 
             // For default locale: create version without prefix
             if ($locale === $default && $hide) {
+                // There is no need to add a prefix here, as the route can not be registered twice by same name.
+                // Thus this cannot mismatch with a Localized url
                 Route::name('without_locale.')
                     ->group($routes);
             }
